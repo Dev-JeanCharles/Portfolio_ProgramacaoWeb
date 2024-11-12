@@ -1,5 +1,33 @@
-<?php 
-    Não se esqueça de se inscrever no canal e deixar seu comentário 
+<?php
+include('header.php');
+$data_nascimento = DateTime::createFromFormat('Y-m-d', $_POST['data_nascimento']);
+
+if(!$data_nascimento) {
+    echo("<p>Data é inválida</p> <a href= 'index.php'");
+}
+
+$signos = simplexml_load_file('signos.xml');
+
+function verificar_signo($data, $inicio, $fim) {
+    $ano = $data->format('Y');
+    $data_inicio = DateTime::createFromFormat('d/m/Y', "$inicio/$ano");
+    $data_fim = DateTime::createFromFormat('d/m/Y', "$fim/$ano");
+
+    if ($data_inicio > $data_fim) {
+        $data_fim->modify('+1 year');
+    }
+    return ($data >= $data_inicio && $data <= $data_fim);
+}
+
+$signo_encontrado = null;
+
+foreach ($signos as $signo) {
+    if (verificar_signo($data_nascimento, $signo->dataInicio, $signo->dataFim)) {
+        $signo_encontrado = $signo;
+        break;
+    }
+}
+
 ?>
 
 <body>
@@ -15,3 +43,4 @@
         </div>
     </div>
 </body>
+
